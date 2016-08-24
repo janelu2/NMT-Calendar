@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-import re
+from NMTevent import NMTevent
 
 
 def create_soup(url):
@@ -19,18 +19,14 @@ def find_date(event_link):
     date_info = str(div.text).split(' ', 1)[1]
     return date_info
 
-# jcl_event_right jcl_right
-calendar_soup = create_soup('http://www.nmt.edu/nmt-calendar')
-rawEvents = []
-eventLinks = []
-i = 0
-for row in calendar_soup.find_all('div', attrs={"class": "eventmiddle"}):
-    rawEvents.append(row)
-    eventLinks.append("http://www.nmt.edu" + str(rawEvents[i].a['href']))
-    date = find_date(eventLinks[i])
-    i += 1
 
+# this is a temporary way to loop and create a bunch of event objects stored in an array
+events = []
+for row in calendar_soup.find_all('div', attrs={"class": "eventmiddle"}):
+    event_link = "http://www.nmt.edu" + str(row.a['href'])
+    new_event = NMTevent(row, event_link, find_date(event_link))
+    events.append(new_event)
+    new_event.pretty()  # pretty print
 
 # for a in soup.findAll('a', title=True):
 #    print "Found this: ", a['title']
-
